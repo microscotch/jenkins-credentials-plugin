@@ -147,6 +147,8 @@ public class CredentialsParameterDefinitionTest {
         collector.checkThat("build page should not leave param description unescaped", text, not(containsString("<param description>")));
 
         HtmlForm form = page.getFormByName("parameters");
+        HtmlTextInput value = form.getInputByValue("<param default>");
+        value.setText("<test param description>");        
         r.submit(form);
         r.waitUntilNoActivity();
         FreeStyleBuild b = p.getBuildByNumber(1);
@@ -155,9 +157,10 @@ public class CredentialsParameterDefinitionTest {
         text = page.getWebResponse().getContentAsString();
         collector.checkThat("parameters page should escape param name", text, containsString("&lt;param name&gt;"));
         collector.checkThat("parameters page should not leave param name unescaped", text, not(containsString("<param name>")));
-        collector.checkThat("parameters page should mark up param description", text, containsString("<b>[</b>param description<b>]</b>"));
-        collector.checkThat("parameters page should not leave param description unescaped", text, not(containsString("<param description>")));
+        collector.checkThat("parameters page should mark up param description", text, containsString("<b>[</b>test param description<b>]</b>"));
+        collector.checkThat("parameters page should not leave param description unescaped", text, not(containsString("<test param description>")));
     }
+
 
     static class MyMarkupFormatter extends MarkupFormatter {
         @Override
